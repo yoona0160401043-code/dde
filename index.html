@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explore Japan · Class 2 互動練習</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:wght@400;700;800&family=Noto+Sans+TC:wght@400;700&display=swap">
+<style>
+  :root{
+    --ink:#1F2A44; --soft:#4A5568; --paper:#FBF7F4; --pink:#FCEAF0; --sakura:#F2A7BE;
+    --rose:#B8325F; --ok:#1E7A4C; --okbg:#E3F4EA; --bad:#B42318; --badbg:#FDE8E6; --line:#EBD9DF;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Nunito','Noto Sans TC',Arial,sans-serif;font-size:18px;line-height:1.45}
+  .zh{font-family:'Noto Sans TC',Arial,sans-serif}
+  header{background:var(--pink);padding:28px 20px 24px;border-bottom:3px solid var(--sakura)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+  header .wrap{padding:0}
+  .eyebrow{font-weight:800;color:var(--rose);font-size:15px;letter-spacing:.5px}
+  h1{font-family:'Fredoka',sans-serif;font-weight:700;font-size:40px;margin:4px 0 6px;line-height:1.1}
+  h2{font-family:'Fredoka',sans-serif;font-weight:600;font-size:28px;margin:0;line-height:1.2}
+  h2 .zh{font-size:20px;color:var(--soft);font-weight:400;margin-left:8px}
+  .intro{color:var(--soft);margin:0}
+  .namebar{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .namebar label{font-weight:700}
+  .namebar input{font:inherit;padding:10px 14px;border:2px solid var(--sakura);border-radius:12px;background:#fff;min-width:200px;color:var(--ink)}
+  .progress{position:sticky;top:0;z-index:5;background:rgba(251,247,244,.96);border-bottom:1px solid var(--line);padding:10px 0}
+  .progress .wrap{display:flex;align-items:center;gap:14px}
+  .bar{flex:1;height:12px;background:var(--pink);border-radius:8px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--rose);border-radius:8px;transition:width .35s}
+  .score{font-family:'Fredoka',sans-serif;font-weight:600;font-size:20px;white-space:nowrap}
+  section.part{background:#fff;border:2px solid var(--line);border-radius:22px;padding:24px;margin:28px 0}
+  .head{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+  .badge{flex:none;width:44px;height:44px;border-radius:50%;background:var(--rose);color:var(--paper);font-family:'Fredoka',sans-serif;font-weight:600;font-size:22px;display:grid;place-items:center}
+  .howto{color:var(--soft);margin:4px 0 18px}
+  button{font:inherit;cursor:pointer;color:var(--ink)}
+  .btn{background:var(--rose);color:var(--paper);border:none;border-radius:14px;padding:12px 22px;font-weight:800;font-size:17px}
+  .btn.ghost{background:#fff;color:var(--rose);border:2px solid var(--rose)}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn:focus-visible,.chip:focus-visible,.tile:focus-visible,.opt:focus-visible{outline:3px solid #3B6FB0;outline-offset:2px}
+
+  /* matching */
+  .match{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .colm{display:flex;flex-direction:column;gap:10px}
+  .tile{border:2px solid var(--line);background:var(--paper);border-radius:14px;padding:14px 16px;text-align:left;font-weight:700;font-size:19px;min-height:56px;transition:transform .15s,background .2s,border-color .2s}
+  .tile.zh{font-weight:400}
+  .tile.sel{border-color:var(--rose);background:var(--pink)}
+  .tile.done{border-color:var(--ok);background:var(--okbg);color:var(--ok);cursor:default}
+  .tile.wrong{border-color:var(--bad);background:var(--badbg);animation:shake .35s}
+  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* questions */
+  .q{padding:16px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:none;padding-top:0}
+  .qtext{font-size:20px;font-weight:700;margin:0 0 4px}
+  .qtext .gap{display:inline-block;min-width:90px;border-bottom:3px solid var(--sakura);text-align:center;color:var(--rose)}
+  .qzh{color:var(--soft);margin:0 0 10px;font-size:16px}
+  .opts{display:flex;flex-wrap:wrap;gap:10px}
+  .opt{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 18px;font-weight:700;font-size:17px}
+  .opt.right{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+  .opt.no{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .fb{margin:8px 0 0;font-weight:700;font-size:16px;min-height:1px}
+  .fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+  .say{border:none;background:none;color:#3B6FB0;font-weight:800;font-size:15px;padding:4px 0;margin-left:6px;text-decoration:underline}
+
+  /* builder */
+  .answer{min-height:60px;border:2px dashed var(--sakura);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--paper);margin-bottom:10px}
+  .answer.ok{border-style:solid;border-color:var(--ok);background:var(--okbg)}
+  .answer.bad{border-style:solid;border-color:var(--bad);background:var(--badbg)}
+  .answer:empty::before{content:'Tap the words below 點下面的詞';color:#9AA3B2;font-size:15px;padding-left:6px}
+  .bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:46px}
+  .chip{border:2px solid var(--sakura);background:#fff;border-radius:12px;padding:8px 14px;font-weight:800;font-size:18px}
+  .answer .chip{background:var(--pink)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+  /* true/false */
+  .tf{display:flex;gap:10px}
+  .tf .opt{min-width:120px}
+
+  /* result */
+  #result{text-align:center;background:var(--pink);border-color:var(--sakura)}
+  .big{font-family:'Fredoka',sans-serif;font-size:64px;font-weight:700;color:var(--rose);line-height:1;margin:10px 0}
+  .stars{font-size:22px;font-weight:800;margin-bottom:6px}
+  .breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+  .breakdown div{background:#fff;border-radius:14px;padding:10px}
+  .breakdown b{display:block;font-family:'Fredoka',sans-serif;font-size:26px}
+  .breakdown span{font-size:14px;color:var(--soft)}
+  footer{color:var(--soft);text-align:center;font-size:14px;padding:10px 0 40px}
+  @media (max-width:600px){
+    h1{font-size:32px} section.part{padding:18px} .breakdown{grid-template-columns:repeat(2,1fr)}
+    .tile{font-size:17px;padding:12px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Explore Japan · Class 2 · 第二課</div>
+    <h1>Japan Fun Worksheet</h1>
+    <p class="intro zh">日本互動練習 — 完成四個部分，看看你得幾分！</p>
+    <div class="namebar"><label for="name">Name 姓名：</label><input id="name" autocomplete="off" placeholder="Type your name"></div>
+  </div>
+</header>
+
+<div class="progress"><div class="wrap"><div class="bar"><i id="barfill"></i></div><div class="score" id="scoreTop">0 / 27</div></div></div>
+
+<main class="wrap">
+
+  <section class="part" id="p1">
+    <div class="head"><div class="badge">1</div><h2>Match the words <span class="zh">單詞配對</span></h2></div>
+    <p class="howto">Tap an English word, then tap its Chinese meaning. <span class="zh">先點英文，再點中文意思。</span></p>
+    <div class="match"><div class="colm" id="enCol"></div><div class="colm" id="zhCol"></div></div>
+    <p class="fb" id="matchFb"></p>
+  </section>
+
+  <section class="part" id="p2">
+    <div class="head"><div class="badge">2</div><h2>Fill in the blank <span class="zh">填充</span></h2></div>
+    <p class="howto">Choose the right word. <span class="zh">選出正確的詞。</span></p>
+    <div id="fillList"></div>
+  </section>
+
+  <section class="part" id="p3">
+    <div class="head"><div class="badge">3</div><h2>Build the sentence <span class="zh">排句子</span></h2></div>
+    <p class="howto">Tap the words in the right order. Tap a word again to take it back. <span class="zh">按正確次序點詞語，再點一下可以拿回。</span></p>
+    <div id="buildList"></div>
+  </section>
+
+  <section class="part" id="p4">
+    <div class="head"><div class="badge">4</div><h2>True or false? <span class="zh">對還是錯？</span></h2></div>
+    <p class="howto">Read and choose. <span class="zh">讀一讀，再選擇。</span></p>
+    <div id="tfList"></div>
+  </section>
+
+  <section class="part" id="result">
+    <h2>My score <span class="zh">我的分數</span></h2>
+    <div class="stars" id="who"></div>
+    <div class="big" id="scoreBig">0 / 27</div>
+    <div class="stars" id="msg">Let’s start! 開始吧！</div>
+    <div class="breakdown">
+      <div><b id="s1">0/8</b><span>Match 配對</span></div>
+      <div><b id="s2">0/8</b><span>Fill 填充</span></div>
+      <div><b id="s3">0/5</b><span>Build 排句子</span></div>
+      <div><b id="s4">0/6</b><span>True/False 對錯</span></div>
+    </div>
+    <button class="btn ghost" id="reset">Try again 重新開始</button>
+  </section>
+</main>
+<footer>Show this score to your teacher. 完成後給老師看你的分數。</footer>
+
+<script>
+(function(){
+  var MATCH=[['sail','帆'],['bloom','開花'],['symbol','象徵'],['tallest','最高的'],['crossing','十字路口'],['give up','放棄'],['imagination','想像力'],['new beginning','新開始']];
+  var FILL=[
+    {s:'Cherry blossoms ___ in spring.',zh:'櫻花在春天開花。',a:'bloom',o:['bloom','give up','shine']},
+    {s:'In Japan, school starts in ___.',zh:'在日本，學校在四月開學。',a:'April',o:['sail','April','scam']},
+    {s:'Cherry blossoms are a ___ of Japan.',zh:'櫻花是日本的象徵。',a:'symbol',o:['street','busy','symbol']},
+    {s:'Tokyo Skytree is the ___ tower in Japan.',zh:'東京晴空塔是日本最高的塔。',a:'tallest',o:['tallest','careful','creative']},
+    {s:'Shibuya Crossing is a very ___ street crossing.',zh:'澀谷十字路口是一個非常繁忙的路口。',a:'busy',o:['bloom','busy','April']},
+    {s:'Be careful! Watch out for ___.',zh:'小心！要提防騙局。',a:'scams',o:['sails','seasons','scams']},
+    {s:'Don’t ___. Keep trying!',zh:'不要放棄，繼續努力！',a:'give up',o:['give up','tallest','April']},
+    {s:'Use your ___ and be creative!',zh:'發揮你的想像力，要有創意！',a:'imagination',o:['crossing','imagination','spring']}
+  ];
+  var BUILD=[
+    {s:'Cherry blossoms bloom in spring.',zh:'櫻花在春天開花。'},
+    {s:'Tokyo is the capital of Japan.',zh:'東京是日本的首都。'},
+    {s:'Don’t give up.',zh:'不要放棄。'},
+    {s:'I have many hopes and dreams.',zh:'我有很多希望和夢想。'},
+    {s:'Shine like the brightest star!',zh:'像最亮的星星一樣發光！'}
+  ];
+  var TF=[
+    {s:'Cherry blossoms bloom in winter.',zh:'櫻花在冬天開花。',a:false,why:'They bloom in spring. 櫻花在春天開花。'},
+    {s:'In Japan, school starts in April.',zh:'在日本，學校在四月開學。',a:true,why:'Yes! School starts in April. 對！四月開學。'},
+    {s:'Tokyo Tower is the tallest tower in Japan.',zh:'東京鐵塔是日本最高的塔。',a:false,why:'Tokyo Skytree is the tallest. 東京晴空塔才是最高的。'},
+    {s:'In Japan, cherry blossoms are called sakura.',zh:'在日本，櫻花叫做 sakura。',a:true,why:'Yes! Sakura means cherry blossom. 對！'},
+    {s:'Shibuya Crossing is very quiet.',zh:'澀谷十字路口很安靜。',a:false,why:'It is very busy. 那裏非常繁忙。'},
+    {s:'“Give up” means 放棄.',zh:'“Give up” 的意思是「放棄」。',a:true,why:'Yes! 對！'}
+  ];
+  var score={1:0,2:0,3:0,4:0}, MAX={1:8,2:8,3:5,4:6}, TOTAL=27;
+  var answered={1:0,2:0,3:0,4:0};
+
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  var canSpeak=false;try{canSpeak='speechSynthesis' in window && typeof SpeechSynthesisUtterance!=='undefined';}catch(e){}
+  function speak(t){try{var u=new SpeechSynthesisUtterance(t.replace('___','')); u.lang='en-US'; u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){}}
+  function sayBtn(text){var b=el('button','say','Listen 聽');b.type='button';b.onclick=function(){speak(text)};return b;}
+
+  function update(){
+    var tot=score[1]+score[2]+score[3]+score[4];
+    var done=answered[1]+answered[2]+answered[3]+answered[4];
+    document.getElementById('scoreTop').textContent=tot+' / '+TOTAL;
+    document.getElementById('scoreBig').textContent=tot+' / '+TOTAL;
+    document.getElementById('barfill').style.width=(done/TOTAL*100)+'%';
+    for(var k=1;k<=4;k++)document.getElementById('s'+k).textContent=score[k]+'/'+MAX[k];
+    var m='Let’s start! 開始吧！';
+    if(done===TOTAL){ m = tot>=24?'Excellent! 太棒了！':tot>=18?'Great job! 做得好！':tot>=12?'Good try! 繼續加油！':'Keep practising! 多練習！'; }
+    else if(done>0){ m='Keep going… 繼續做…（'+done+'/'+TOTAL+'）'; }
+    document.getElementById('msg').textContent=m;
+    var n=document.getElementById('name').value.trim();
+    document.getElementById('who').textContent=n?n:'';
+  }
+
+  /* Part 1: matching */
+  function buildMatch(){
+    var en=document.getElementById('enCol'), zh=document.getElementById('zhCol'), fb=document.getElementById('matchFb');
+    en.innerHTML='';zh.innerHTML='';fb.textContent='';fb.className='fb';
+    var selEn=null, tried={}, left=MATCH.length;
+    shuffle(MATCH).forEach(function(p){
+      var b=el('button','tile',p[0]);b.type='button';b.dataset.k=p[0];
+      b.onclick=function(){ if(b.classList.contains('done'))return; if(selEn)selEn.classList.remove('sel'); selEn=b; b.classList.add('sel'); };
+      en.appendChild(b);
+    });
+    shuffle(MATCH).forEach(function(p){
+      var b=el('button','tile zh',p[1]);b.type='button';b.dataset.k=p[0];
+      b.onclick=function(){
+        if(b.classList.contains('done'))return;
+        if(!selEn){fb.className='fb bad';fb.textContent='Tap an English word first. 先點英文。';return;}
+        if(selEn.dataset.k===b.dataset.k){
+          selEn.classList.remove('sel');selEn.classList.add('done');b.classList.add('done');
+          if(!tried[b.dataset.k])score[1]++;
+          answered[1]++;left--;selEn=null;
+          fb.className='fb ok';fb.textContent=left?'Correct! 答對了！':'All matched! 全部配對完成！';
+          update();
+        } else {
+          tried[selEn.dataset.k]=true;
+          b.classList.remove('wrong');void b.offsetWidth;b.classList.add('wrong');
+          fb.className='fb bad';fb.textContent='Not this one. Try again! 再試一次！';
+        }
+      };
+      zh.appendChild(b);
+    });
+  }
+
+  /* Part 2: fill */
+  function buildFill(){
+    var box=document.getElementById('fillList');box.innerHTML='';
+    FILL.forEach(function(q,i){
+      var d=el('div','q');
+      var t=el('p','qtext');
+      var parts=q.s.split('___');
+      t.appendChild(document.createTextNode((i+1)+'. '+parts[0]));
+      var g=el('span','gap','?');t.appendChild(g);t.appendChild(document.createTextNode(parts[1]));
+      var z=el('p','qzh zh',q.zh);
+      var o=el('div','opts'), fb=el('p','fb');
+      q.o.forEach(function(w){
+        var b=el('button','opt',w);b.type='button';
+        b.onclick=function(){
+          var all=o.querySelectorAll('button');
+          for(var k=0;k<all.length;k++){all[k].disabled=true;if(all[k].textContent===q.a)all[k].classList.add('right');}
+          g.textContent=q.a;
+          if(w===q.a){score[2]++;fb.className='fb ok';fb.textContent='Correct! 答對了！';}
+          else{b.classList.add('no');fb.className='fb bad';fb.textContent='The answer is “'+q.a+'”. 答案是 '+q.a+'。';}
+          answered[2]++;
+          if(canSpeak)fb.appendChild(sayBtn(q.s.replace('___',q.a)));
+          update();
+        };
+        o.appendChild(b);
+      });
+      d.appendChild(t);d.appendChild(z);d.appendChild(o);d.appendChild(fb);box.appendChild(d);
+    });
+  }
+
+  /* Part 3: build */
+  function buildBuild(){
+    var box=document.getElementById('buildList');box.innerHTML='';
+    BUILD.forEach(function(q,i){
+      var words=q.s.split(' ');
+      var d=el('div','q');
+      d.appendChild(el('p','qtext',(i+1)+'. '));
+      d.lastChild.appendChild(el('span','zh',q.zh));
+      var ans=el('div','answer'), bank=el('div','bank'), row=el('div','row'), fb=el('p','fb');
+      var check=el('button','btn','Check 檢查');check.type='button';check.disabled=true;
+      var order=shuffle(words.map(function(w,ix){return {w:w,ix:ix};}));
+      if(order.map(function(x){return x.w}).join(' ')===q.s&&order.length>1)order.push(order.shift());
+      var locked=false;
+      function refresh(){check.disabled=locked||bank.children.length>0;}
+      order.forEach(function(x){
+        var c=el('button','chip',x.w);c.type='button';
+        c.onclick=function(){ if(locked)return; (c.parentNode===bank?ans:bank).appendChild(c); refresh(); };
+        bank.appendChild(c);
+      });
+      check.onclick=function(){
+        var got=[].map.call(ans.children,function(c){return c.textContent}).join(' ');
+        locked=true;check.disabled=true;answered[3]++;
+        if(got===q.s){score[3]++;ans.className='answer ok';fb.className='fb ok';fb.textContent='Correct! 答對了！';}
+        else{ans.className='answer bad';fb.className='fb bad';fb.textContent='Answer 答案: '+q.s;}
+        if(canSpeak)fb.appendChild(sayBtn(q.s));
+        update();
+      };
+      row.appendChild(check);
+      d.appendChild(ans);d.appendChild(bank);d.appendChild(row);d.appendChild(fb);box.appendChild(d);
+    });
+  }
+
+  /* Part 4: true/false */
+  function buildTF(){
+    var box=document.getElementById('tfList');box.innerHTML='';
+    TF.forEach(function(q,i){
+      var d=el('div','q');
+      d.appendChild(el('p','qtext',(i+1)+'. '+q.s));
+      d.appendChild(el('p','qzh zh',q.zh));
+      var o=el('div','tf'), fb=el('p','fb');
+      [['True 對',true],['False 錯',false]].forEach(function(p){
+        var b=el('button','opt',p[0]);b.type='button';
+        b.onclick=function(){
+          var all=o.querySelectorAll('button');for(var k=0;k<all.length;k++)all[k].disabled=true;
+          if(p[1]===q.a){b.classList.add('right');score[4]++;fb.className='fb ok';fb.textContent='Correct! '+q.why;}
+          else{b.classList.add('no');fb.className='fb bad';fb.textContent='Not quite. '+q.why;}
+          answered[4]++;update();
+        };
+        o.appendChild(b);
+      });
+      d.appendChild(o);d.appendChild(fb);box.appendChild(d);
+    });
+  }
+
+  function start(){score={1:0,2:0,3:0,4:0};answered={1:0,2:0,3:0,4:0};buildMatch();buildFill();buildBuild();buildTF();update();}
+  document.getElementById('reset').onclick=function(){start();window.scrollTo({top:0,behavior:'smooth'});};
+  document.getElementById('name').addEventListener('input',update);
+  start();
+})();
+</script>
+</body>
+</html>
